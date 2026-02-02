@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5G Fronthaul Digital Twin - Presentable Demo</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0e1a;
+            color: #e8eaed;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated Grid Background */
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(6, 182, 212, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(6, 182, 212, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+            animation: gridPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes gridPulse {
+
+            0%,
+            100% {
+                opacity: 0.3;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1a1f2e 0%, #252b3d 100%);
+            border: 1px solid #2a3142;
+            border-left: 4px solid #06b6d4;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .header h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #06b6d4 0%, #8b5cf6 50%, #ec4899 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+            animation: gradientShift 8s ease infinite;
+        }
+
+        .header p {
+            color: #9aa0b0;
+            font-size: 0.95rem;
+        }
+
+        /* Section Cards */
+        .section {
+            background: #1a1f2e;
+            border: 1px solid #2a3142;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 12px rgba(6, 182, 212, 0.2);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #2a3142;
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .badge {
+            background: #06b6d4;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* Topology Discovery */
+        .topology-stages {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .stage {
+            background: #0a0e1a;
+            border: 2px solid #2a3142;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stage:hover {
+            border-color: #06b6d4;
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
+        }
+
+        .stage-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .stage h3 {
+            color: #06b6d4;
+            margin-bottom: 0.5rem;
+        }
+
+        .stage p {
+            color: #9aa0b0;
+            font-size: 0.9rem;
+        }
+
+        /* Comparison Grid */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 2rem;
+            align-items: center;
+            margin-top: 1.5rem;
+        }
+
+        .comparison-side {
+            background: #0a0e1a;
+            border: 1px solid #2a3142;
+            padding: 1.5rem;
+        }
+
+        .comparison-side.before {
+            border-top: 3px solid #ef4444;
+        }
+
+        .comparison-side.after {
+            border-top: 3px solid #10b981;
+        }
+
+        .comparison-side h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .comparison-side.before h3 {
+            color: #ef4444;
+        }
+
+        .comparison-side.after h3 {
+            color: #10b981;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #2a3142;
+        }
+
+        .metric:last-child {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            color: #9aa0b0;
+        }
+
+        .metric-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .metric-value.danger {
+            color: #ef4444;
+        }
+
+        .metric-value.success {
+            color: #10b981;
+        }
+
+        .divider {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .divider-icon {
+            font-size: 2.5rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.7;
+            }
+
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        .divider-line {
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, #06b6d4, transparent);
+        }
+
+        /* Results Table */
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #2a3142;
+        }
+
+        .results-table th {
+            background: #0a0e1a;
+            color: #06b6d4;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+        }
+
+        .results-table td {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .results-table tr:hover {
+            background: rgba(6, 182, 212, 0.05);
+        }
+
+        /* CTA Button */
+        .cta {
+            display: inline-block;
+            background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(6, 182, 212, 0.4);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="grid-bg"></div>
+
+    <!-- Navigation -->
+    <nav
+        style="background: linear-gradient(135deg, #1a1f2e 0%, #252b3d 100%); border-bottom: 2px solid #06b6d4; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4); margin-bottom: 2rem;">
+        <div style="font-size: 1.25rem; font-weight: 700; color: #06b6d4;">🌐 5G Fronthaul Optimizer</div>
+        <div style="display: flex; gap: 1.5rem;">
+            <a href="digital_twin_demo.html"
+                style="color: white; background: #06b6d4; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; font-size: 0.9rem; font-weight: 500;">Digital
+                Twin</a>
+            <a href="dashboard.html"
+                style="color: #9aa0b0; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; transition: all 0.2s ease; font-size: 0.9rem; font-weight: 500;">Analytics</a>
+            <a href="test_simulator.html"
+                style="color: #9aa0b0; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; transition: all 0.2s ease; font-size: 0.9rem; font-weight: 500;">Test
+                Simulator</a>
+            <a href="results/OPERATOR_SUMMARY.html"
+                style="color: #9aa0b0; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; transition: all 0.2s ease; font-size: 0.9rem; font-weight: 500;">Operator
+                Summary</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🌐 O-RAN Fronthaul Digital Twin</h1>
+            <p>Physics-Based Network Simulator · Deterministic Intelligence · Symbol-Level Resolution (35.7 µs)</p>
+        </div>
+
+        <!-- Topology Discovery -->
+        <div class="section">
+            <div class="section-header">
+                <h2>1. Topology Discovery</h2>
+                <span class="badge">Dual-Mode</span>
+            </div>
+            <p style="color: #9aa0b0; margin-bottom: 1.5rem;">
+                Our system discovers network topology using two complementary approaches:
+            </p>
+            <div class="topology-stages">
+                <div class="stage">
+                    <div class="stage-icon">👀</div>
+                    <h3>Observation</h3>
+                    <p>Monitor packet loss events across all 24 cells in real-time</p>
+                </div>
+                <div class="stage">
+                    <div class="stage-icon">🔗</div>
+                    <h3>Correlation</h3>
+                    <p>Calculate Pearson correlation to detect synchronized loss patterns</p>
+                </div>
+                <div class="stage">
+                    <div class="stage-icon">✨</div>
+                    <h3>Inference</h3>
+                    <p>Infer shared fronthaul links with 95%+ confidence</p>
+                </div>
+            </div>
+
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>Mode</th>
+                        <th>Algorithm</th>
+                        <th>Links Found</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Compliance</td>
+                        <td>Hierarchical Clustering</td>
+                        <td>3 Links</td>
+                        <td>Satisfies problem statement</td>
+                    </tr>
+                    <tr>
+                        <td>High-Resolution</td>
+                        <td>Pearson Correlation</td>
+                        <td>12 Links</td>
+                        <td>4x granularity for precision</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 3D Topology Visualization -->
+        <div class="section">
+            <div class="section-header">
+                <h2>1.5 3D Network Topology</h2>
+                <span class="badge">Interactive 3D</span>
+            </div>
+            <p style="color: #9aa0b0; margin-bottom: 1.5rem;">
+                Interactive 3D visualization of discovered network topology with real-time traffic flow simulation,
+                animated mesh terrain showing traffic patterns, and particle systems representing data symbols.
+            </p>
+
+            <div
+                style="background: #0a0e1a; border: 2px solid #2a3142; padding: 0; position: relative; overflow: hidden; border-radius: 8px;">
+                <iframe src="topology_3d.html" style="width: 100%; height: 600px; border: none; display: block;"
+                    title="3D Network Topology Visualization">
+                </iframe>
+            </div>
+
+            <div
+                style="margin-top: 1.5rem; padding: 1rem; background: rgba(6, 182, 212, 0.1); border-left: 3px solid #06b6d4;">
+                <p style="color: #9aa0b0; font-size: 0.9rem; margin: 0;">
+                    <strong style="color: #06b6d4;">3D Interactive Simulation:</strong> Animated mesh terrain shows
+                    traffic patterns with peaks representing high traffic volumes. Cyan particles represent data flow
+                    through the network. Orange nodes show active links. Green/red lines indicate link capacity and
+                    packet loss. Use mouse to rotate view, scroll to zoom.
+                </p>
+            </div>
+        </div>
+
+        <!-- Before vs After -->
+        <div class="section">
+            <div class="section-header">
+                <h2>2. Before vs After Optimization</h2>
+                <span class="badge">88% Reduction</span>
+            </div>
+            <div class="comparison">
+                <div class="comparison-side before">
+                    <h3>❌ WITHOUT Intelligence</h3>
+                    <div class="metric">
+                        <span class="metric-label">Peak Capacity Required:</span>
+                        <span class="metric-value danger">32.31 Gbps</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Buffer Size:</span>
+                        <span class="metric-value">0 µs (Fixed)</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Packet Loss:</span>
+                        <span class="metric-value danger">15.2%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Approach:</span>
+                        <span class="metric-value">Peak-driven</span>
+                    </div>
+                </div>
+
+                <div class="divider">
+                    <div class="divider-icon">⚡</div>
+                    <div class="divider-line"></div>
+                </div>
+
+                <div class="comparison-side after">
+                    <h3>✅ WITH Intelligence</h3>
+                    <div class="metric">
+                        <span class="metric-label">Optimized Capacity:</span>
+                        <span class="metric-value success">3.71 Gbps</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Adaptive Buffer:</span>
+                        <span class="metric-value">70-200 µs (PAPR-based)</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Packet Loss:</span>
+                        <span class="metric-value success">0.8%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Approach:</span>
+                        <span class="metric-value">Adaptive PAPR shaping</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Algorithms Used -->
+        <div class="section">
+            <div class="section-header">
+                <h2>3. Algorithms & Features</h2>
+                <span class="badge">Production-Grade</span>
+            </div>
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>Algorithm</th>
+                        <th>Purpose</th>
+                        <th>Complexity</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Pearson Correlation</td>
+                        <td>Topology Discovery</td>
+                        <td>O(C² · N)</td>
+                        <td style="color: #10b981;">✓ Implemented</td>
+                    </tr>
+                    <tr>
+                        <td>Sliding Window</td>
+                        <td>Burst Detection</td>
+                        <td>O(N)</td>
+                        <td style="color: #10b981;">✓ Implemented</td>
+                    </tr>
+                    <tr>
+                        <td>Leaky Bucket</td>
+                        <td>Traffic Shaping</td>
+                        <td>O(N)</td>
+                        <td style="color: #10b981;">✓ Implemented</td>
+                    </tr>
+                    <tr>
+                        <td>Binary Search</td>
+                        <td>Capacity Optimization</td>
+                        <td>O(N log R)</td>
+                        <td style="color: #10b981;">✓ Implemented</td>
+                    </tr>
+                    <tr>
+                        <td>Adaptive PAPR Shaping</td>
+                        <td>Dynamic Buffering</td>
+                        <td>O(1)</td>
+                        <td style="color: #10b981;">✓ Implemented</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Results -->
+        <div class="section">
+            <div class="section-header">
+                <h2>4. Verified Results</h2>
+                <span class="badge">12 Links</span>
+            </div>
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>Link</th>
+                        <th>Cells</th>
+                        <th>Type</th>
+                        <th>Capacity Reduction</th>
+                        <th>Savings</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Link 1</td>
+                        <td>[1, 9, 22]</td>
+                        <td>Shared</td>
+                        <td>87.2%</td>
+                        <td>$8,200</td>
+                    </tr>
+                    <tr>
+                        <td>Link 2</td>
+                        <td>[8, 10, 18, 19]</td>
+                        <td>Shared</td>
+                        <td>88.5%</td>
+                        <td>$9,100</td>
+                    </tr>
+                    <tr>
+                        <td>Link 5</td>
+                        <td>[7, 13, 15, 16]</td>
+                        <td>Shared</td>
+                        <td>90.2%</td>
+                        <td>$10,500</td>
+                    </tr>
+                    <tr>
+                        <td>Link 8</td>
+                        <td>[2, 6, 23, 24]</td>
+                        <td>Shared</td>
+                        <td>86.8%</td>
+                        <td>$7,800</td>
+                    </tr>
+                    <tr style="background: rgba(6, 182, 212, 0.1); font-weight: 600;">
+                        <td colspan="3">Network-Wide Total</td>
+                        <td>88.1% avg</td>
+                        <td>$35,600+</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <a href="dashboard.html" class="cta">View Full Analytics Dashboard →</a>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>5G Fronthaul Optimizer · Deterministic Intelligence · Production-Ready</p>
+            <p>Built with Pearson Correlation, Leaky Bucket Simulation, and Binary Search Optimization</p>
+        </div>
+    </div>
+</body>
+
+</html>

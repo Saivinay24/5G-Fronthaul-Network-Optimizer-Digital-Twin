@@ -1,0 +1,5 @@
+Explanation:
+This cell shows average traffic of 0.02 Gbps, but peak bursts reach 0.1 Gbps—a 6x difference lasting only microseconds. Traditional capacity planning provisions for the 0.1 Gbps peak, wasting 80% of capacity during normal operation. These brief micro-bursts are the root cause of fronthaul congestion, not sustained high traffic.
+
+Decision:
+Micro-bursts, not average load, drive capacity requirements.

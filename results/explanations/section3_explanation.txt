@@ -1,0 +1,8 @@
+Explanation:
+Without traffic shaping, this link requires 2.32 Gbps to handle peak bursts. By adding a 143 microsecond buffer, the system smooths these bursts, reducing required capacity to 0.22 Gbps—a 90.7% reduction. This eliminates the need for a hardware upgrade while maintaining packet loss at 0.80%.
+
+Decision:
+Software shaping with 143 µs buffer replaces $12,000 hardware upgrade.
+
+Why This Is Safe:
+Packet loss remains under 1% across the entire operating range.

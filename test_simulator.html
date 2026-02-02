@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Simulator - 5G Fronthaul Optimizer</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0e1a;
+            color: #e8eaed;
+            line-height: 1.6;
+        }
+
+        /* Navigation Bar */
+        .nav-bar {
+            background: linear-gradient(135deg, #1a1f2e 0%, #252b3d 100%);
+            border-bottom: 2px solid #06b6d4;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+        }
+
+        .nav-brand {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #06b6d4;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-link {
+            color: #9aa0b0;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background: rgba(6, 182, 212, 0.1);
+            color: #06b6d4;
+        }
+
+        .nav-link.active {
+            background: #06b6d4;
+            color: white;
+        }
+
+        /* Grid Background */
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(6, 182, 212, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(6, 182, 212, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a1f2e 0%, #252b3d 100%);
+            border: 1px solid #2a3142;
+            border-left: 4px solid #06b6d4;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #06b6d4;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #9aa0b0;
+            font-size: 0.95rem;
+        }
+
+        .section {
+            background: #1a1f2e;
+            border: 1px solid #2a3142;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+        }
+
+        .section h2 {
+            font-size: 1.5rem;
+            color: #06b6d4;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #2a3142;
+        }
+
+        .test-selector {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .test-selector select {
+            background: #0a0e1a;
+            border: 2px solid #2a3142;
+            color: #e8eaed;
+            padding: 1rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+        }
+
+        .test-selector select:hover {
+            border-color: #06b6d4;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(6, 182, 212, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .progress {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .progress.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #2a3142;
+            border-top: 4px solid #06b6d4;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .results {
+            display: none;
+        }
+
+        .results.active {
+            display: block;
+        }
+
+        .result-card {
+            background: #0a0e1a;
+            border: 2px solid #2a3142;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 6px;
+        }
+
+        .result-card h3 {
+            color: #06b6d4;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background: #1a1f2e;
+            border-radius: 4px;
+        }
+
+        .metric-label {
+            color: #9aa0b0;
+        }
+
+        .metric-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            color: #e8eaed;
+        }
+
+        .metric-value.success {
+            color: #10b981;
+        }
+
+        .metric-value.warning {
+            color: #f59e0b;
+        }
+
+        .metric-value.danger {
+            color: #ef4444;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+        }
+
+        .alert.success {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid #10b981;
+            color: #10b981;
+        }
+
+        .alert.warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid #f59e0b;
+            color: #f59e0b;
+        }
+
+        .alert.danger {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid #ef4444;
+            color: #ef4444;
+        }
+
+        .chart-container {
+            background: #0a0e1a;
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin-top: 1.5rem;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 300px !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="grid-bg"></div>
+
+    <!-- Navigation -->
+    <nav class="nav-bar">
+        <div class="nav-brand">🌐 5G Fronthaul Optimizer</div>
+        <div class="nav-links">
+            <a href="digital_twin_demo.html" class="nav-link">Digital Twin</a>
+            <a href="dashboard.html" class="nav-link">Analytics</a>
+            <a href="test_simulator.html" class="nav-link active">Test Simulator</a>
+            <a href="results/OPERATOR_SUMMARY.html" class="nav-link">Operator Summary</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🧪 Interactive Test Simulator</h1>
+            <p>Run failure mode detection tests and see real-time analysis of network resilience</p>
+        </div>
+
+        <!-- Test Selector -->
+        <div class="section">
+            <h2>Select Test Case</h2>
+            <div class="test-selector">
+                <select id="testCase">
+                    <option value="urllc">URLLC Traffic Detection</option>
+                    <option value="synchronized">Synchronized Burst Detection</option>
+                    <option value="buffer">Buffer Misconfiguration Detection</option>
+                </select>
+                <button class="btn" id="runBtn" onclick="runSimulation()">Run Simulation</button>
+            </div>
+
+            <!-- Progress -->
+            <div class="progress" id="progress">
+                <div class="spinner"></div>
+                <p style="color: #9aa0b0;">Running simulation...</p>
+            </div>
+
+            <!-- Results -->
+            <div class="results" id="results">
+                <div class="result-card">
+                    <h3>🔍 Detection Results</h3>
+                    <div class="metric-grid">
+                        <div class="metric">
+                            <span class="metric-label">Failure Mode:</span>
+                            <span class="metric-value" id="failureMode">-</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Risk Level:</span>
+                            <span class="metric-value" id="riskLevel">-</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Confidence:</span>
+                            <span class="metric-value success" id="confidence">-</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Affected Links:</span>
+                            <span class="metric-value" id="affectedLinks">-</span>
+                        </div>
+                    </div>
+                    <div class="alert" id="recommendation">
+                        <strong>Recommendation:</strong> <span id="recommendationText"></span>
+                    </div>
+                </div>
+
+                <div class="result-card">
+                    <h3>📊 Impact Analysis</h3>
+                    <div class="metric-grid">
+                        <div class="metric">
+                            <span class="metric-label">Packet Loss:</span>
+                            <span class="metric-value danger" id="packetLoss">-</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Latency Impact:</span>
+                            <span class="metric-value warning" id="latency">-</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Buffer Utilization:</span>
+                            <span class="metric-value" id="bufferUtil">-</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Mitigation Status:</span>
+                            <span class="metric-value success" id="mitigation">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h3 style="color: #06b6d4; margin-bottom: 1rem;">Traffic Pattern Analysis</h3>
+                    <canvas id="trafficChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Test case data
+        const testCases = {
+            urllc: {
+                failureMode: "URLLC Traffic Detected",
+                riskLevel: "HIGH",
+                confidence: "94.2%",
+                affectedLinks: "Link 2, Link 5",
+                packetLoss: "2.1%",
+                latency: "+180 µs",
+                bufferUtil: "92%",
+                mitigation: "Increase Buffer",
+                recommendation: "URLLC traffic requires <1ms latency. Current buffer depth (143µs) exceeds budget. Recommend reducing buffer to 70µs or upgrading link capacity.",
+                alertType: "danger",
+                chartData: [12, 45, 78, 92, 88, 95, 91, 87, 82, 76, 68, 52, 38, 25, 18]
+            },
+            synchronized: {
+                failureMode: "Synchronized Bursts",
+                riskLevel: "MEDIUM",
+                confidence: "87.5%",
+                affectedLinks: "Link 1, Link 8",
+                packetLoss: "1.2%",
+                latency: "+85 µs",
+                bufferUtil: "78%",
+                mitigation: "Traffic Shaping",
+                recommendation: "Multiple cells bursting simultaneously. Correlation coefficient ρ=0.89 detected. Apply adaptive PAPR shaping to desynchronize traffic.",
+                alertType: "warning",
+                chartData: [15, 18, 85, 88, 90, 87, 20, 22, 88, 92, 89, 85, 25, 18, 15]
+            },
+            buffer: {
+                failureMode: "Buffer Misconfiguration",
+                riskLevel: "LOW",
+                confidence: "91.8%",
+                affectedLinks: "Link 3",
+                packetLoss: "0.3%",
+                latency: "+12 µs",
+                bufferUtil: "45%",
+                mitigation: "Optimize Buffer",
+                recommendation: "Buffer size (200µs) is oversized for current PAPR (1.8). Recommend reducing to 70µs to minimize latency without increasing loss.",
+                alertType: "success",
+                chartData: [25, 28, 32, 35, 38, 42, 45, 48, 52, 48, 45, 42, 38, 35, 32]
+            }
+        };
+
+        function runSimulation() {
+            const testCase = document.getElementById('testCase').value;
+            const runBtn = document.getElementById('runBtn');
+            const progress = document.getElementById('progress');
+            const results = document.getElementById('results');
+
+            // Hide results, show progress
+            results.classList.remove('active');
+            progress.classList.add('active');
+            runBtn.disabled = true;
+
+            // Simulate processing
+            setTimeout(() => {
+                const data = testCases[testCase];
+
+                // Update results
+                document.getElementById('failureMode').textContent = data.failureMode;
+                document.getElementById('riskLevel').textContent = data.riskLevel;
+                document.getElementById('riskLevel').className = 'metric-value ' + data.alertType;
+                document.getElementById('confidence').textContent = data.confidence;
+                document.getElementById('affectedLinks').textContent = data.affectedLinks;
+                document.getElementById('packetLoss').textContent = data.packetLoss;
+                document.getElementById('latency').textContent = data.latency;
+                document.getElementById('bufferUtil').textContent = data.bufferUtil;
+                document.getElementById('mitigation').textContent = data.mitigation;
+                document.getElementById('recommendationText').textContent = data.recommendation;
+                document.getElementById('recommendation').className = 'alert ' + data.alertType;
+
+                // Draw chart
+                drawChart(data.chartData);
+
+                // Show results, hide progress
+                progress.classList.remove('active');
+                results.classList.add('active');
+                runBtn.disabled = false;
+            }, 2000);
+        }
+
+        function drawChart(data) {
+            const canvas = document.getElementById('trafficChart');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width = canvas.offsetWidth;
+            const height = canvas.height = 300;
+
+            // Clear canvas
+            ctx.fillStyle = '#0a0e1a';
+            ctx.fillRect(0, 0, width, height);
+
+            // Draw grid
+            ctx.strokeStyle = '#2a3142';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 10; i++) {
+                const y = (height / 10) * i;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.stroke();
+            }
+
+            // Draw data
+            const maxValue = Math.max(...data);
+            const stepX = width / (data.length - 1);
+
+            ctx.strokeStyle = '#06b6d4';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+
+            data.forEach((value, index) => {
+                const x = index * stepX;
+                const y = height - (value / maxValue) * height * 0.9;
+
+                if (index === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+
+            ctx.stroke();
+
+            // Draw points
+            ctx.fillStyle = '#06b6d4';
+            data.forEach((value, index) => {
+                const x = index * stepX;
+                const y = height - (value / maxValue) * height * 0.9;
+                ctx.beginPath();
+                ctx.arc(x, y, 4, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Labels
+            ctx.fillStyle = '#9aa0b0';
+            ctx.font = '12px Inter';
+            ctx.fillText('Time (slots)', width - 80, height - 10);
+            ctx.fillText('Traffic Rate', 10, 20);
+        }
+    </script>
+</body>
+
+</html>

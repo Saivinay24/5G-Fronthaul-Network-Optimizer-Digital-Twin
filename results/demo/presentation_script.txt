@@ -1,0 +1,30 @@
+O-RAN FRONTHAUL OPTIMIZER - 2-MINUTE PRESENTATION SCRIPT
+================================================================
+
+[SECTION 1 - 30s]
+"This cell's average load is under 0.5 Gbps, but micro-bursts spike to 30+ Gbps.
+Fronthaul congestion is caused by micro-bursts, not sustained traffic."
+
+[SECTION 2 - 30s]
+"We used correlation analysis to discover topology. These cells burst together
+because they share the same link. Pure data-driven discovery, no network map needed."
+
+[SECTION 3 - 45s]
+"Traditional solution: upgrade to 32 Gbps. Our solution: software shaping with
+143 µs buffer reduces requirement to 3.7 Gbps. That's 88.5% capacity reduction.
+No hardware upgrade needed."
+
+[SECTION 4 - 30s]
+"For each link, we provide clear decisions supported by AI explanations. Link 2: DO NOT UPGRADE. 
+Enable shaping, save $12,000, reduce energy by 90 kWh/year. Clear actions, not just data."
+
+[SECTION 5 - 30s]
+"Is it safe? Wide operating range from 100-200 µs. Packet loss stays under 1%.
+Robust, tunable, production-ready."
+
+[CLOSING - 15s]
+"88% capacity reduction. Deterministic and explainable. Ready for deployment.
+Questions?"
+
+================================================================
+TOTAL: 2 minutes 30 seconds

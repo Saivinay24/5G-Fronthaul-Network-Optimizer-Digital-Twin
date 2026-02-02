@@ -1,0 +1,5 @@
+Explanation:
+These 4 cells (IDs: 8, 10, 18, 19) burst at precisely the same time, revealing they share Link 2. This topology was discovered through correlation analysis of congestion events, without any network documentation. The synchronized burst pattern is deterministic proof of shared infrastructure.
+
+Decision:
+Link 2 carries traffic from 4 cells, discovered via blind correlation analysis.

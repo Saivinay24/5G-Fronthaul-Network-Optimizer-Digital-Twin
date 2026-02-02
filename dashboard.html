@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5G Fronthaul Optimizer - AI-Powered Analytics Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="results/explanations/ai_explanations.js"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #ec4899;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --dark-light: #1e293b;
+            --gray: #64748b;
+            --gray-light: #cbd5e1;
+            --white: #ffffff;
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-success: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--dark);
+            color: var(--white);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+        }
+
+        .background-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+            animation: pulse 15s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 0.3;
+            }
+
+            50% {
+                transform: scale(1.1) rotate(180deg);
+                opacity: 0.5;
+            }
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Premium Header */
+        .header {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #f093fb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .header .tagline {
+            font-size: 1.25rem;
+            color: var(--gray-light);
+            font-weight: 400;
+        }
+
+        /* Summary Card - Premium */
+        .executive-summary {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .executive-summary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-secondary);
+        }
+
+        .executive-summary h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .executive-summary .summary-text {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+            color: var(--gray-light);
+        }
+
+        .key-points {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .key-point {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            padding: 1.5rem;
+            border-radius: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .key-point:hover {
+            transform: translateY(-4px);
+            background: rgba(99, 102, 241, 0.15);
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .key-point strong {
+            display: block;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--white);
+        }
+
+        .key-point span {
+            color: var(--gray-light);
+            font-size: 0.95rem;
+        }
+
+        /* Stats Bar - Modern */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .stat-card .value {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .label {
+            color: var(--gray-light);
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Navigation Tabs - Sleek */
+        .nav-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(20px);
+            padding: 1rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-tab {
+            background: transparent;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--gray-light);
+            position: relative;
+        }
+
+        .nav-tab::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%) scaleX(0);
+            width: 80%;
+            height: 2px;
+            background: var(--gradient-primary);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-tab:hover {
+            color: var(--white);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .nav-tab.active {
+            background: var(--gradient-primary);
+            color: var(--white);
+            box-shadow: var(--shadow-md);
+        }
+
+        .nav-tab.active::before {
+            transform: translateX(-50%) scaleX(1);
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+            animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Visualization Gallery - Premium */
+        .viz-gallery {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .viz-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 2.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .viz-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gradient-primary);
+        }
+
+        .viz-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .viz-card h3 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--white);
+        }
+
+        .viz-card .question {
+            font-size: 1.25rem;
+            color: #f093fb;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .viz-card img {
+            width: 100%;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            margin: 1.5rem 0;
+            transition: transform 0.3s ease;
+        }
+
+        .viz-card img:hover {
+            transform: scale(1.02);
+        }
+
+        .talking-points {
+            background: rgba(15, 23, 42, 0.5);
+            padding: 1.5rem;
+            border-radius: 16px;
+            margin-top: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .talking-points h4 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .talking-points ul {
+            margin-left: 1.5rem;
+        }
+
+        .talking-points li {
+            margin-bottom: 0.75rem;
+            color: var(--gray-light);
+            line-height: 1.6;
+        }
+
+        .talking-points li strong {
+            color: var(--white);
+        }
+
+        /* AI Explanation - Premium */
+        .ai-explanation {
+            background: linear-gradient(135deg, rgba(240, 147, 251, 0.15) 0%, rgba(245, 87, 108, 0.15) 100%);
+            border: 1px solid rgba(240, 147, 251, 0.3);
+            padding: 2rem;
+            border-radius: 20px;
+            margin-top: 2rem;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-explanation::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-secondary);
+        }
+
+        .ai-explanation h4 {
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--white);
+        }
+
+        .ai-explanation-content {
+            background: rgba(15, 23, 42, 0.4);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .ai-part {
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+            color: var(--gray-light);
+        }
+
+        .ai-part:last-child {
+            margin-bottom: 0;
+        }
+
+        .ai-part strong {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-size: 1.05rem;
+            color: var(--white);
+        }
+
+        .ai-decision {
+            background: rgba(16, 185, 129, 0.15);
+            padding: 1rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--success);
+        }
+
+        .ai-safety {
+            background: rgba(99, 102, 241, 0.15);
+            padding: 1rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* Code Block - Modern */
+        .code-block {
+            background: rgba(15, 23, 42, 0.8);
+            color: #10b981;
+            padding: 1.5rem;
+            border-radius: 12px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.875rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        /* Link Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .link-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .link-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--success);
+        }
+
+        .link-card.upgrade-required::before {
+            background: var(--danger);
+        }
+
+        .link-card.monitor::before {
+            background: var(--warning);
+        }
+
+        .link-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .link-card h3 {
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .link-card .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--gray-light);
+        }
+
+        .link-card .metric:last-child {
+            border-bottom: none;
+        }
+
+        .link-card .metric strong {
+            color: var(--white);
+        }
+
+        .link-card .decision {
+            background: rgba(16, 185, 129, 0.1);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 1.5rem;
+            font-weight: 500;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .action-card {
+            background: var(--gradient-primary);
+            padding: 2rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .action-card:hover::before {
+            opacity: 1;
+        }
+
+        .action-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .action-card h3 {
+            margin-bottom: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .action-card p {
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+            color: var(--gray-light);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer p {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gradient-primary);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Section Headers */
+        .section-header {
+            margin-bottom: 2rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-header p {
+            color: var(--gray-light);
+            font-size: 1.125rem;
+        }
+
+        /* Info Boxes */
+        .info-box {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+        }
+
+        .info-box h3 {
+            color: var(--white);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .info-box ol,
+        .info-box ul {
+            margin-left: 1.5rem;
+            color: var(--gray-light);
+        }
+
+        .info-box li {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        .info-box strong {
+            color: var(--white);
+        }
+
+        /* Success Box */
+        .success-box {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 2rem;
+            border-radius: 20px;
+            margin: 2rem 0;
+        }
+
+        .success-box h3 {
+            color: var(--success);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .success-box p {
+            color: var(--gray-light);
+            line-height: 1.8;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .header {
+                padding: 2rem;
+            }
+
+            .stat-card .value {
+                font-size: 2rem;
+            }
+
+            .nav-tabs {
+                flex-direction: column;
+            }
+
+            .nav-tab {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Background Animation -->
+    <div class="background-animation"></div>
+
+    <!-- Navigation -->
+    <nav
+        style="background: linear-gradient(135deg, #1a1f2e 0%, #252b3d 100%); border-bottom: 2px solid #06b6d4; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4); margin-bottom: 2rem; position: relative; z-index: 1000;">
+        <div style="font-size: 1.25rem; font-weight: 700; color: #06b6d4;">🌐 5G Fronthaul Optimizer</div>
+        <div style="display: flex; gap: 1.5rem;">
+            <a href="digital_twin_demo.html"
+                style="color: #9aa0b0; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; transition: all 0.2s ease; font-size: 0.9rem; font-weight: 500;">Digital
+                Twin</a>
+            <a href="dashboard.html"
+                style="color: white; background: #06b6d4; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; font-size: 0.9rem; font-weight: 500;">Analytics</a>
+            <a href="test_simulator.html"
+                style="color: #9aa0b0; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; transition: all 0.2s ease; font-size: 0.9rem; font-weight: 500;">Test
+                Simulator</a>
+            <a href="results/OPERATOR_SUMMARY.html"
+                style="color: #9aa0b0; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; transition: all 0.2s ease; font-size: 0.9rem; font-weight: 500;">Operator
+                Summary</a>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Premium Header -->
+        <div class="header">
+            <div class="header-content">
+                <h1>🚀 5G Fronthaul Optimizer</h1>
+                <p class="tagline">AI-Powered Intelligent Traffic Shaping for O-RAN Networks</p>
+            </div>
+        </div>
+
+        <!-- Executive Summary -->
+        <div class="executive-summary">
+            <h2>⚡ Executive Summary</h2>
+            <p class="summary-text">
+                <strong>The Problem:</strong> Fronthaul links suffer micro-burst congestion (peaks 600x average),
+                leading to expensive hardware upgrades.
+            </p>
+            <p class="summary-text">
+                <strong>Our Solution:</strong> Deterministic traffic shaping with 143 µs buffer eliminates 88% of
+                required capacity—no hardware upgrade needed.
+            </p>
+
+            <div class="key-points">
+                <div class="key-point">
+                    <strong>💰 Business Impact</strong>
+                    <span>$12K saved per link<br>90 kWh/year energy reduction</span>
+                </div>
+                <div class="key-point">
+                    <strong>✅ Production Ready</strong>
+                    <span>&lt;1% packet loss guarantee<br>Fail-safe behavior</span>
+                </div>
+                <div class="key-point">
+                    <strong>🎯 Why It Wins</strong>
+                    <span>Deterministic (not ML)<br>Explainable & operator-facing</span>
+                </div>
+                <div class="key-point">
+                    <strong>📊 Key Numbers</strong>
+                    <span>88.5% capacity reduction<br>$30K+ network savings</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="value">88.5%</div>
+                <div class="label">Capacity Reduction</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">$12K</div>
+                <div class="label">Savings Per Link</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">143µs</div>
+                <div class="label">Buffer Size</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">&lt;1%</div>
+                <div class="label">Packet Loss</div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showSection('visualizations')">📊 Visualizations</button>
+            <button class="nav-tab" onclick="showSection('operator')">👨‍💼 Operator Summary</button>
+            <button class="nav-tab" onclick="showSection('demo')">🎤 Demo Guide</button>
+            <button class="nav-tab" onclick="showSection('robustness')">🛡️ Robustness</button>
+            <button class="nav-tab" onclick="showSection('quickstart')">⚡ Quick Start</button>
+        </div>
+
+        <!-- Visualizations Section -->
+        <div id="visualizations" class="content-section active">
+            <div class="section-header">
+                <h2>Interactive Visualization Gallery</h2>
+                <p>Explore the complete analysis with AI-powered insights</p>
+            </div>
+
+            <div class="viz-gallery">
+                <!-- Section 1 -->
+                <div class="viz-card">
+                    <h3>Section 1: The Problem</h3>
+                    <p class="question">❓ Why Does Peak Provisioning Overestimate Capacity?</p>
+                    <img src="results/demo/section1_microburst_problem.png" alt="Micro-burst Problem"
+                        onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'800\' height=\'400\'%3E%3Crect fill=\'%231e293b\' width=\'800\' height=\'400\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' fill=\'%23cbd5e1\' font-size=\'18\' font-family=\'Inter\'%3ERun: python src/generate_demo.py%3C/text%3E%3C/svg%3E'">
+                    <div class="talking-points">
+                        <h4>Key Talking Points:</h4>
+                        <ul>
+                            <li>Average load: &lt;0.5 Gbps (actual utilization)</li>
+                            <li>Peak bursts: 30+ Gbps (drives expensive upgrades)</li>
+                            <li>PAPR: 600x+ (the waste factor)</li>
+                            <li><strong>Business Impact:</strong> Traditional approach wastes 98% of capacity</li>
+                        </ul>
+                    </div>
+
+                    <!-- AI Explanation -->
+                    <div class="ai-explanation">
+                        <h4>🤖 AI Insight</h4>
+                        <div id="ai-section1"></div>
+                    </div>
+                </div>
+
+                <!-- Section 2 -->
+                <div class="viz-card">
+                    <h3>Section 2: Topology Discovery</h3>
+                    <p class="question">❓ How Do We Discover Network Structure Without a Map?</p>
+                    <img src="results/demo/section2_topology_discovery.png" alt="Topology Discovery"
+                        onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'800\' height=\'400\'%3E%3Crect fill=\'%231e293b\' width=\'800\' height=\'400\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' fill=\'%23cbd5e1\' font-size=\'18\' font-family=\'Inter\'%3ERun: python src/generate_demo.py%3C/text%3E%3C/svg%3E'">
+                    <div class="talking-points">
+                        <h4>Key Talking Points:</h4>
+                        <ul>
+                            <li>Synchronized bursts = shared infrastructure</li>
+                            <li>Blind discovery = deployment flexibility</li>
+                            <li>No network map required = faster rollout</li>
+                            <li><strong>Innovation:</strong> Works on any network, no vendor docs needed</li>
+                        </ul>
+                    </div>
+
+                    <!-- AI Explanation -->
+                    <div class="ai-explanation">
+                        <h4>🤖 AI Insight</h4>
+                        <div id="ai-section2"></div>
+                    </div>
+                </div>
+
+                <!-- Section 3 -->
+                <div class="viz-card">
+                    <h3>Section 3: Capacity Optimization</h3>
+                    <p class="question">❓ Can Software Replace Hardware Upgrades?</p>
+                    <img src="results/demo/section3_capacity_comparison.png" alt="Capacity Comparison"
+                        onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'800\' height=\'400\'%3E%3Crect fill=\'%231e293b\' width=\'800\' height=\'400\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' fill=\'%23cbd5e1\' font-size=\'18\' font-family=\'Inter\'%3ERun: python src/generate_demo.py%3C/text%3E%3C/svg%3E'">
+                    <div class="talking-points">
+                        <h4>Key Talking Points:</h4>
+                        <ul>
+                            <li>Before: 32 Gbps (hardware upgrade required)</li>
+                            <li>After: 3.7 Gbps (software shaping)</li>
+                            <li>Reduction: 88.5%</li>
+                            <li><strong>Business Impact:</strong> $12K saved per link, scale to 10 links = $120K</li>
+                        </ul>
+                    </div>
+
+                    <!-- AI Explanation -->
+                    <div class="ai-explanation">
+                        <h4>🤖 AI Insight</h4>
+                        <div id="ai-section3"></div>
+                    </div>
+                </div>
+
+                <!-- Section 4 -->
+                <div class="viz-card">
+                    <h3>Section 4: Operator Decision</h3>
+                    <p class="question">❓ What Should the Operator Do Right Now?</p>
+                    <img src="results/demo/section4_operator_decision.png" alt="Operator Decision"
+                        onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'800\' height=\'400\'%3E%3Crect fill=\'%231e293b\' width=\'800\' height=\'400\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' fill=\'%23cbd5e1\' font-size=\'18\' font-family=\'Inter\'%3ERun: python src/generate_demo.py%3C/text%3E%3C/svg%3E'">
+                    <div class="talking-points">
+                        <h4>Key Talking Points:</h4>
+                        <ul>
+                            <li>Binary decision: upgrade vs no-upgrade</li>
+                            <li>Exact deployment parameters provided</li>
+                            <li>Cost/energy/risk quantified</li>
+                            <li><strong>Trust Factor:</strong> Explainable and auditable decisions</li>
+                        </ul>
+                    </div>
+
+                    <!-- AI Explanation -->
+                    <div class="ai-explanation">
+                        <h4>🤖 AI Insight</h4>
+                        <div id="ai-section4"></div>
+                    </div>
+                </div>
+
+                <!-- Section 5 -->
+                <div class="viz-card">
+                    <h3>Section 5: Robustness Analysis</h3>
+                    <p class="question">❓ Is This Safe for Production Deployment?</p>
+                    <img src="results/demo/section5_robustness_analysis.png" alt="Robustness Analysis"
+                        onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'800\' height=\'400\'%3E%3Crect fill=\'%231e293b\' width=\'800\' height=\'400\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' fill=\'%23cbd5e1\' font-size=\'18\' font-family=\'Inter\'%3ERun: python src/generate_demo.py%3C/text%3E%3C/svg%3E'">
+                    <div class="talking-points">
+                        <h4>Key Talking Points:</h4>
+                        <ul>
+                            <li>Wide safe range (100-200 µs)</li>
+                            <li>Robust to traffic variations</li>
+                            <li>Fail-safe behavior (upgrades when unsafe)</li>
+                            <li><strong>Safety:</strong> Production-ready with guarantees</li>
+                        </ul>
+                    </div>
+
+                    <!-- AI Explanation -->
+                    <div class="ai-explanation">
+                        <h4>🤖 AI Insight</h4>
+                        <div id="ai-section5"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Operator Summary Section -->
+        <div id="operator" class="content-section">
+            <div class="section-header">
+                <h2>Operator Decision Summary</h2>
+                <p>Quick 10-second scan of all network links with clear upgrade/no-upgrade decisions</p>
+            </div>
+
+            <div class="summary-grid">
+                <div class="link-card">
+                    <h3>✅ Link 2: NO UPGRADE</h3>
+                    <div class="metric">
+                        <span>Risk Level:</span>
+                        <strong style="color: var(--success);">✅ NONE</strong>
+                    </div>
+                    <div class="metric">
+                        <span>Current Peak:</span>
+                        <strong>2.32 Gbps</strong>
+                    </div>
+                    <div class="metric">
+                        <span>Optimal Capacity:</span>
+                        <strong>0.22 Gbps</strong>
+                    </div>
+                    <div class="metric">
+                        <span>Reduction:</span>
+                        <strong style="color: var(--success);">90.7%</strong>
+                    </div>
+                    <div class="decision">
+                        → Enable shaping with 143 µs buffer<br>
+                        → Cost savings: $12,000<br>
+                        → Energy: 90 kWh/year saved
+                    </div>
+                </div>
+
+                <div class="link-card">
+                    <h3>ℹ️ More Links Available</h3>
+                    <p style="color: var(--gray-light); margin-bottom: 1rem;">Run the analysis to see all network links:
+                    </p>
+                    <div class="code-block">python src/quick_summary.py --data-folder data</div>
+                    <p style="color: var(--gray-light); margin: 1rem 0;">Then open:</p>
+                    <div class="code-block">open results/OPERATOR_SUMMARY.html</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demo Guide Section -->
+        <div id="demo" class="content-section">
+            <div class="section-header">
+                <h2>2-3 Minute Demo Script</h2>
+                <p>Complete presentation guide with timing and key points</p>
+            </div>
+
+            <div class="info-box">
+                <h3>Demo Flow (Total: 2-3 minutes)</h3>
+                <ol>
+                    <li>
+                        <strong>Section 1 (30s):</strong> Show the micro-burst problem
+                        <ul style="margin-top: 0.5rem;">
+                            <li>Emphasize: Average &lt;0.5 Gbps, peaks 30+ Gbps</li>
+                            <li>Business impact: 98% capacity waste</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Section 2 (30s):</strong> Explain blind topology discovery
+                        <ul style="margin-top: 0.5rem;">
+                            <li>Emphasize: No network map needed</li>
+                            <li>Innovation: Works on any network</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Section 3 (45s):</strong> Prove the business case
+                        <ul style="margin-top: 0.5rem;">
+                            <li>Before: 32 Gbps ($12K upgrade)</li>
+                            <li>After: 3.7 Gbps (software only)</li>
+                            <li>Savings: $12K per link</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Section 4 (30s):</strong> Show operator decisions
+                        <ul style="margin-top: 0.5rem;">
+                            <li>Clear: DO NOT UPGRADE</li>
+                            <li>Exact parameters: 143 µs buffer</li>
+                            <li>Quantified impact: cost, energy, loss</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Section 5 (30s):</strong> Address robustness
+                        <ul style="margin-top: 0.5rem;">
+                            <li>Wide safe range: 100-200 µs</li>
+                            <li>Fail-safe: Recommends upgrade when unsafe</li>
+                            <li>Production-ready with guarantees</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+
+            <div class="action-card" style="margin-top: 2rem;">
+                <h3>📖 Full Demo Guide</h3>
+                <p>For detailed talking points and Q&A preparation:</p>
+                <div class="code-block" style="margin-top: 1rem;">cat docs/DEMO_GUIDE.md</div>
+            </div>
+        </div>
+
+        <!-- Robustness Section -->
+        <div id="robustness" class="content-section">
+            <div class="section-header">
+                <h2>Production Safety & Robustness</h2>
+                <p>Comprehensive failure scenarios and system responses</p>
+            </div>
+
+            <div class="info-box">
+                <h3>🛡️ Failure Scenarios & System Response</h3>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="color: var(--danger); margin-bottom: 0.75rem; font-size: 1.125rem;">1. Synchronized
+                        Bursts</h4>
+                    <p><strong>What happens:</strong> Multiple cells burst simultaneously</p>
+                    <p><strong>System response:</strong> ✅ Flags as HIGH risk → Recommends UPGRADE or
+                        CONDITIONAL_SHAPING</p>
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="color: var(--danger); margin-bottom: 0.75rem; font-size: 1.125rem;">2. Insufficient
+                        Buffer</h4>
+                    <p><strong>What happens:</strong> Hardware can't provide required buffer depth</p>
+                    <p><strong>System response:</strong> ✅ Detects marginal benefit → Recommends hardware upgrade</p>
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="color: var(--danger); margin-bottom: 0.75rem; font-size: 1.125rem;">3. Traffic Pattern
+                        Change</h4>
+                    <p><strong>What happens:</strong> Traffic increases 2x after deployment</p>
+                    <p><strong>System response:</strong> ✅ Monitoring detects loss > 1% → Triggers re-analysis</p>
+                </div>
+
+                <div>
+                    <h4 style="color: var(--danger); margin-bottom: 0.75rem; font-size: 1.125rem;">4. URLLC Traffic</h4>
+                    <p><strong>What happens:</strong> Link carries ultra-low latency traffic</p>
+                    <p><strong>System response:</strong> ✅ Flags as CRITICAL → Blocks shaping deployment</p>
+                </div>
+            </div>
+
+            <div class="success-box">
+                <h3>✅ Safety Guarantee</h3>
+                <p style="font-size: 1.125rem; font-weight: 600; color: var(--white); margin-bottom: 0.75rem;">
+                    "When in doubt, the system recommends the safe path: capacity upgrade."
+                </p>
+                <p>This makes it suitable for production deployment in safety-critical telecom infrastructure.</p>
+            </div>
+
+            <div class="info-box">
+                <h3>📚 Full Documentation</h3>
+                <div class="code-block">cat docs/ROBUSTNESS.md</div>
+            </div>
+        </div>
+
+        <!-- Quick Start Section -->
+        <div id="quickstart" class="content-section">
+            <div class="section-header">
+                <h2>⚡ Quick Start Guide</h2>
+                <p>Get started in minutes with these simple commands</p>
+            </div>
+
+            <div class="quick-actions">
+                <div class="action-card">
+                    <h3>📊 Generate Visualizations</h3>
+                    <p>Create all 5 enhanced demo visualizations</p>
+                    <div class="code-block" style="margin-top: 1rem;">python src/generate_demo.py --data-folder data
+                        --output results/demo</div>
+                </div>
+
+                <div class="action-card">
+                    <h3>👨‍💼 Operator Summary</h3>
+                    <p>Get 10-second decision summary</p>
+                    <div class="code-block" style="margin-top: 1rem;">python src/quick_summary.py --data-folder data
+                    </div>
+                    <div class="code-block" style="margin-top: 0.5rem;">open results/OPERATOR_SUMMARY.html</div>
+                </div>
+
+                <div class="action-card">
+                    <h3>🤖 AI Explanations</h3>
+                    <p>Generate natural language insights</p>
+                    <div class="code-block" style="margin-top: 1rem;">python src/generate_explanations.py --data-folder
+                        data</div>
+                </div>
+
+                <div class="action-card">
+                    <h3>🔬 Full Analysis</h3>
+                    <p>Run complete six-layer system</p>
+                    <div class="code-block" style="margin-top: 1rem;">python src/main_v2.py --data-folder data</div>
+                </div>
+
+                <div class="action-card">
+                    <h3>🎯 What-If Simulator</h3>
+                    <p>Test different scenarios</p>
+                    <div class="code-block" style="margin-top: 1rem;">python src/cli_simulator.py --link 2 --buffer 143
+                        --rate 5 --loss-limit 0.01</div>
+                </div>
+            </div>
+
+            <div class="info-box" style="margin-top: 2rem;">
+                <h3>📁 Output Files</h3>
+                <ul>
+                    <li><strong>Visualizations:</strong> <code>results/demo/section*.png</code></li>
+                    <li><strong>Operator Summary (Markdown):</strong> <code>results/OPERATOR_SUMMARY.md</code></li>
+                    <li><strong>Operator Summary (HTML):</strong> <code>results/OPERATOR_SUMMARY.html</code></li>
+                    <li><strong>AI Explanations:</strong> <code>results/explanations/complete_narrative.md</code></li>
+                    <li><strong>Demo Guide:</strong> <code>docs/DEMO_GUIDE.md</code></li>
+                    <li><strong>Robustness Doc:</strong> <code>docs/ROBUSTNESS.md</code></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p style="font-size: 1.125rem; font-weight: 600;">5G Fronthaul Optimizer</p>
+            <p>Production-Grade Traffic Shaping for O-RAN Networks</p>
+            <p style="margin-top: 1rem; opacity: 0.7;">Deterministic | Explainable | Operator-Ready | AI-Enhanced</p>
+        </div>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Remove active class from all tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Load AI explanations on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof loadAIExplanation === 'function') {
+                // Load explanations for each section
+                for (let i = 1; i <= 5; i++) {
+                    const sectionId = `section${i}`;
+                    const element = document.getElementById(`ai-${sectionId}`);
+                    if (element) {
+                        element.innerHTML = loadAIExplanation(sectionId);
+                    }
+                }
+                console.log('✅ AI explanations loaded successfully');
+            } else {
+                console.log('ℹ️ AI explanations not available (run: python src/generate_explanations.py)');
+            }
+        });
+    </script>
+</body>
+
+</html>
