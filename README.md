@@ -23,24 +23,50 @@ This system implements an intelligent, deterministic optimization solution for 5
 - **AI-Powered Explanations**: Natural language insights for operator decisions
 
 
-## Quick Start
+## Quick Start - Run the Dashboards
 
+**Get started in 3 steps** - See the final product immediately:
+
+### Step 1: Setup Environment
 ```bash
 # Clone repository
-git clone https://github.com/Saivinay24/5G-Fronthaul-Optimizer.git
-cd 5G-Fronthaul-Optimizer
+git clone https://github.com/Saivinay24/5G-Fronthaul-Network-Optimizer-Digital-Twin.git
+cd 5G-Fronthaul-Network-Optimizer-Digital-Twin
 
-# Setup environment
+# Setup Python environment
 python3 -m venv venv
-source venv/bin/activate
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install pandas numpy matplotlib seaborn jupyter
+```
 
-# Run full analysis
+### Step 2: Generate Results & Digital Twin Data
+```bash
+# Run full analysis (generates operator summary and visualizations)
 python src/main_v2.py --data-folder data
 
-# Generate demo visualizations
-python src/generate_demo.py --data-folder data --output results/demo
+# Generate digital twin simulation data
+python src/export_digital_twin_data.py
 ```
+
+### Step 3: Launch Dashboards
+```bash
+# Start the web server
+python src/server.py
+
+# Open in your browser:
+# - Operator Summary: http://localhost:8000/results/OPERATOR_SUMMARY.html
+# - Analytics Dashboard: http://localhost:8000/dashboard.html
+# - Digital Twin: http://localhost:8000/digital_twin.html
+# - Test Simulator: http://localhost:8000/test_simulator.html
+```
+
+**That's it!** You now have access to all four interactive dashboards showing:
+- 88.5% capacity reduction results
+- Physics-based network simulation
+- Interactive failure mode testing
+- Complete operator recommendations
+
+---
 
 ## Demo & Visualization
 
